@@ -1,23 +1,31 @@
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View} from "react-native";
 import { Text } from "react-native";
 import { Card } from "react-native-paper";
-
-const dados = [
-    {
-        'id':1,
-        'titulo': 'A volta dos que não foram',
-        'autor': 'John Nobody',
-        'editora': 'Fechou'
-    },
-    {
-        'id':2,
-        'titulo': 'Fogo na caixa dagua',
-        'autor': 'Joe Nobody',
-        'editora': 'Fechou'
-    },
-]
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function Home(){
+    const [dados, setDados] = useState([]);
+
+    async function getData() {
+        try{
+        var Response = await axios.get("https://bibliotecaetecmaua.azurewebsites.net/api/LivrosSedeApi");
+        setDados(Response.data);
+        }
+        catch(erro){
+            console.log("Falha ao carregar os livros: " + erro)
+        }
+    }
+
+    useEffect(
+        ()=>{
+            getData();
+        },
+        []
+    );
+
+
+
     return(
         <FlatList 
         data={dados}
@@ -25,9 +33,9 @@ export default function Home(){
         <Card style={estilo.cardEstilo}>
             <Card.Title title={item.titulo}/>
 
-                <Card.Cover source={{uri: 'https://classic.exame.com/wp-content/uploads/2020/11/livros-2.jpg?quality=70&strip=info&w=1024'}}></Card.Cover>
+                <Card.Cover source={{uri: `https://bibliotecaetecmaua.azurewebsites.net/Content/Images/${item.imagem}`}}></Card.Cover>
                 <Card.Content>
-                    <Text>{item.autor}</Text>
+                    <Text>{item.autorPrincipal}</Text>
                     <Text>{item.editora}</Text>
                 </Card.Content>
         </Card>
